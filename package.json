@@ -1,0 +1,41 @@
+{
+  "name": "alhasa-grocery-tracker",
+  "version": "1.0.0",
+  "description": "AI-powered grocery location tracker for Al Hasa sales routes",
+  "main": "index.js",
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "test": "jest",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "react": "18.2.0",
+    "react-native": "0.72.6",
+    "react-native-vision-camera": "^3.6.0",
+    "react-native-maps": "^1.8.0",
+    "react-native-geolocation-service": "^5.3.1",
+    "react-native-text-recognition": "^0.3.0",
+    "react-native-fs": "^2.20.0",
+    "react-native-permissions": "^3.10.1",
+    "axios": "^1.6.0",
+    "@react-native-async-storage/async-storage": "^1.19.5",
+    "react-native-image-picker": "^7.0.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.23.0",
+    "@babel/runtime": "^7.23.0",
+    "@react-native/eslint-config": "^0.72.2",
+    "@react-native/metro-config": "^0.72.11",
+    "@tsconfig/react-native": "^3.0.0",
+    "@types/react": "^18.2.37",
+    "@types/react-native": "^0.72.6",
+    "typescript": "^5.2.2",
+    "metro-react-native-babel-preset": "^0.77.0"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}
