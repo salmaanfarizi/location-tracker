@@ -1,4 +1,4 @@
-import TextRecognition from 'react-native-text-recognition';
+import TextRecognition from '@react-native-ml-kit/text-recognition';
 
 /**
  * Extract text from image using OCR
@@ -10,22 +10,20 @@ export const extractTextFromImage = async (
   try {
     const result = await TextRecognition.recognize(imageUri);
 
-    if (!result || result.length === 0) {
+    if (!result || !result.text) {
       return 'Unknown Shop';
     }
 
-    // Combine all recognized text
-    const allText = result.join(' ').trim();
+    // Get all text blocks
+    const blocks = result.blocks || [];
 
-    // Try to extract the shop name (usually the largest/first text)
-    const lines = result.filter(line => line.trim().length > 0);
-
-    if (lines.length > 0) {
-      // Return the first significant line as shop name
-      return lines[0].trim();
+    if (blocks.length > 0) {
+      // Return the first block's text (usually the shop name/sign)
+      return blocks[0].text.trim();
     }
 
-    return allText || 'Unknown Shop';
+    // Fallback to full text
+    return result.text.trim() || 'Unknown Shop';
   } catch (error) {
     console.error('OCR Error:', error);
     return 'Unknown Shop';

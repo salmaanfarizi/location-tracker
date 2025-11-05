@@ -10,13 +10,13 @@ import {
   ActivityIndicator,
   ScrollView,
   StatusBar,
+  TextInput,
 } from 'react-native';
 import {launchCamera} from 'react-native-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {requestLocationPermission, getLocationWithAddress} from './src/services/location';
-import {getShopNameFromPhoto} from './src/services/ocr';
 import {saveToGoogleSheets, saveToLocalStorage} from './src/services/googleSheets';
-import {Grocery, ROUTE_COLORS, ROUTE_NAMES} from './src/types';
+import {Grocery, ROUTE_COLORS} from './src/types';
 import MapView from './src/components/MapView';
 
 function App(): JSX.Element {
@@ -64,21 +64,15 @@ function App(): JSX.Element {
       setCurrentPhoto(photoUri);
 
       // Step 2: Get GPS Location
-      Alert.alert('📍 Getting Location...', 'Please wait');
       const locationData = await getLocationWithAddress();
       setLocation(locationData);
-
-      // Step 3: Extract Shop Name using OCR
-      Alert.alert('🤖 Reading Shop Name...', 'AI is analyzing the photo');
-      const extractedName = await getShopNameFromPhoto(photoUri);
-      setShopName(extractedName);
 
       setLoading(false);
 
       // Show success message
       Alert.alert(
-        '✅ Data Captured!',
-        `Shop: ${extractedName}\nPlace: ${locationData.address}\n\nNow select the route and save.`,
+        '✅ Photo & Location Captured!',
+        `Location: ${locationData.address}\n\nNow enter shop name, select route, and save.`,
         [{text: 'OK'}],
       );
     } catch (error) {
@@ -89,8 +83,8 @@ function App(): JSX.Element {
   };
 
   const handleSave = async () => {
-    if (!currentPhoto || !shopName || !location) {
-      Alert.alert('⚠️ Incomplete Data', 'Please take a photo first!');
+    if (!currentPhoto || !shopName.trim() || !location) {
+      Alert.alert('⚠️ Incomplete Data', 'Please take photo and enter shop name!');
       return;
     }
 
@@ -99,7 +93,7 @@ function App(): JSX.Element {
     const groceryData: Grocery = {
       id: Date.now().toString(),
       photoUri: currentPhoto,
-      name: shopName,
+      name: shopName.trim(),
       place: location.address || 'Unknown',
       latitude: location.latitude,
       longitude: location.longitude,
@@ -162,10 +156,10 @@ function App(): JSX.Element {
             onPress={handleTakePhoto}
             disabled={loading}>
             <Text style={styles.captureButtonText}>
-              📸 ONE-CLICK CAPTURE
+              📸 CAPTURE PHOTO & LOCATION
             </Text>
             <Text style={styles.captureSubtext}>
-              Photo + Name + Location + GPS
+              Photo + GPS + Address
             </Text>
           </TouchableOpacity>
 
@@ -181,9 +175,16 @@ function App(): JSX.Element {
             <View style={styles.previewSection}>
               <Image source={{uri: currentPhoto}} style={styles.previewImage} />
 
-              <View style={styles.infoCard}>
-                <Text style={styles.infoLabel}>🏪 Shop Name:</Text>
-                <Text style={styles.infoValue}>{shopName}</Text>
+              {/* Shop Name Input */}
+              <View style={styles.inputCard}>
+                <Text style={styles.inputLabel}>🏪 Shop Name:</Text>
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="Enter shop name..."
+                  value={shopName}
+                  onChangeText={setShopName}
+                  autoFocus={true}
+                />
               </View>
 
               <View style={styles.infoCard}>
@@ -227,7 +228,7 @@ function App(): JSX.Element {
               <TouchableOpacity
                 style={styles.saveButton}
                 onPress={handleSave}
-                disabled={loading}>
+                disabled={loading || !shopName.trim()}>
                 <Text style={styles.saveButtonText}>✅ SAVE TO GOOGLE SHEETS</Text>
               </TouchableOpacity>
             </View>
@@ -238,7 +239,7 @@ function App(): JSX.Element {
             <Text style={styles.statsTitle}>📊 Collection Stats</Text>
             <Text style={styles.statsText}>Total Groceries: {groceries.length}</Text>
             <Text style={styles.statsText}>
-              Goal: 1750 stores | Progress: {groceries.length}/1750
+              Goal: 1750 stores | Progress: {groceries.length}/1750 ({((groceries.length / 1750) * 100).toFixed(1)}%)
             </Text>
           </View>
         </ScrollView>
@@ -324,6 +325,27 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 12,
     marginBottom: 16,
+  },
+  inputCard: {
+    backgroundColor: '#F9F9F9',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#666',
+    marginBottom: 8,
+  },
+  textInput: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#DDD',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    color: '#333',
   },
   infoCard: {
     backgroundColor: '#F9F9F9',
