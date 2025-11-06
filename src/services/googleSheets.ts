@@ -38,7 +38,7 @@ export interface GroceryData {
  */
 
 // Replace with your Google Apps Script Web App URL
-const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZEktKhTlb-CZsg6ZBOvRHW67I1vVCa2Hh1yGHxo21296H2omifeitXq9R-JSRodYuEg/exec';
 
 export const saveToGoogleSheets = async (data: GroceryData): Promise<boolean> => {
   try {
